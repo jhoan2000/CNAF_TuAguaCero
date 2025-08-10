@@ -6,7 +6,7 @@ import time
 import hashlib
 import base64
 from Crypto.Cipher import AES
-
+import os
 SECRET_KEY = b"TuAguaCero101124" # Clave secreta de 16 bytes
 PIN_AUTORIZADO = "101124"
 
@@ -239,4 +239,4 @@ def main(p):
 
 threading.Thread(target=start_mqtt, daemon=True).start()
 
-ft.app(target=main, assets_dir="assets")
+ft.app(target=main, assets_dir="assets", view=ft.WEB_BROWSER, port=int(os.environ.get("PORT", 5000)))
