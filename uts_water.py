@@ -5,10 +5,10 @@ import time
 
 
 print("start")
-trig = Pin(5, Pin.OUT)   # D2
-echo = Pin(23, Pin.IN)    # D1
+trig = Pin(35, Pin.OUT)   # D2
+echo = Pin(36, Pin.IN)    # D1
 
-bomba_pin = Pin(4, Pin.OUT)
+bomba_pin = Pin(7, Pin.OUT)
 def medir_distancia():
     trig.value(0)
     time.sleep_us(2)
@@ -26,4 +26,6 @@ def medir_distancia():
     print("Distancia :", distancia)
     return str(distancia)
 
-
+while  True :
+    medir_distancia()
+    time.sleep(3)

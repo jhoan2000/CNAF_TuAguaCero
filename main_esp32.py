@@ -11,6 +11,7 @@ import connect_wifi
 UMBRAL_DISTANCIA = 25 # 
 # --- Variables protegidas ---
 bomba_pin = Pin(4, Pin.OUT)
+led = Pin(35, Pin.OUT)
 
 # --- Conexión MQTT ---
 mqtt = MQTTClient("weather_monitor", "broker.hivemq.com")
@@ -49,12 +50,27 @@ while True:
     mensaje_final = ujson.dumps({"data": payload, "firma": firma})
     try:
         mqtt.publish("tuaguacero/LWF", mensaje_final)
+        led.on()
+        time.sleep(0.1) # Resultado
+        led.off()
+        time.sleep(0.1) # Resultado
+        led.on()
+        time.sleep(0.2) # Resultado
+        led.off()
+        time.sleep(0.2) # Resultado
+        led.on()
+        time.sleep(0.7) # Resultado
+        led.off()
+        time.sleep(0.2) # Resultado
     except Exception as e:
         print("Error publicando MQTT:", e)
         try:
             mqtt.connect()
         except:
             print("Error al reconectar al broker.")
-
+        led.on()
+        time.sleep(1) # Resultado
+        led.off()
+        time.sleep(1) # Resultado
     print("Publicado:", mensaje_final)
     time.sleep(2)
