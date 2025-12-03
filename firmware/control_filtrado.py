@@ -46,7 +46,7 @@ def sistema(umbrales_agua_filtrada, umbrales_agua_cruda,
         elif control_manual == 0: # Automático
             filtado_automatico()
 
-    filtado_manual()
+    arrancar_sistema()
 
     return bomba, val_purga
     
