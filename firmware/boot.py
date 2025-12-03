@@ -36,9 +36,12 @@ def get(url):
 def update():
     # versión local
     local_ver = "0"
-    if "version.txt" in os.listdir():
+    try:
         with open("version.txt") as f:
             local_ver = f.read().strip()
+    except:
+        print("version.txt no existe, usando versión 0")
+        local_ver = "0"
 
     print("Versión local:", local_ver)
 
