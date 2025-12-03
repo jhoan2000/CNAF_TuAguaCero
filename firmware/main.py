@@ -8,10 +8,16 @@ from cifrar_aes import *
 from control_filtrado import sistema_filtrado
 #import connect_wifi
 
+# --- Configuración del sistema ---
 UMBRAL_DISTANCIA = 25 # 
+UMBBRAL_AGUA_CRUDA = (120, 20)  # cm (max, min)
+UMBRAL_AGUA_FILTRADA = (100, 20)  # cm (max, min)
+sistema_purgado = False
+control_manual = 0  # 0: automático, 1: detener, 2: purgar
 # --- Variables protegidas ---
 
 led = Pin(35, Pin.OUT)
+control_manual_pin = Pin(4, Pin.IN, Pin.PULL_UP)
 
 # --- Conexión MQTT ---
 mqtt = MQTTClient("weather_monitor", "broker.hivemq.com")
@@ -36,13 +42,14 @@ mqtt.subscribe("tuaguacero/control_filtros")
 while True:
     mqtt.check_msg()  # revisa si hay comandos entrantes
     print(f"MENSAJE {mqtt.check_msg()}")
-    distancia = medir_distancia()
-    bomba_estado = float(distancia) <= UMBRAL_DISTANCIA  # Si la distancia es mayor al umbral, la bomba se enciende
-    bomba_pin.value(1 if bomba_estado else 0)
+    distancia_ac, distancia_af  = medir_distancia()
+    bomba_estado, valvula_estado =sistema_filtrado(UMBRAL_AGUA_FILTRADA, UMBBRAL_AGUA_CRUDA, distancia_ac, distancia_af ) # No medido en este ejemplo)
 
     payload = {
-        "dist": cifrar_valor(distancia),
+        "dist_ac": cifrar_valor(distancia_ac),
+        "dist_af": cifrar_valor(distancia_af),
         "bomba_filtro": cifrar_valor(bomba_estado),
+        "valvula_purga": cifrar_valor(valvula_estado),
         "pin": cifrar_valor(PIN_AUTENTICACION),
     }
     json_data = ujson.dumps(payload)

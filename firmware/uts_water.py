@@ -26,7 +26,6 @@ def medir_distancia():
 
     distancia_ac = round((duracion_ac / 2) * 0.0343, 2)  # cm
     print("Distancia agua cruda :", distancia_ac)
-    return str(distancia_ac)
 
     trig_af.value(0)
     time.sleep_us(2)
@@ -41,7 +40,8 @@ def medir_distancia():
         return 0
 
     distancia_af = round((duracion_af / 2) * 0.0343, 2)  # cm
-    print("Distancia agua cruda :", distancia_af)
+    print("Distancia agua filtrada :", distancia_af)
+
     return str(distancia_ac, distancia_af)
 
 while  True :
