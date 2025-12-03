@@ -1,16 +1,13 @@
-import network, urequests, machine, os, time
+import network, urequests, os, machine, time
 
 WIFI_SSID = "ZTE_E2FF51"
 WIFI_PASS = "35600911"
 
 SERVER = "http://192.168.0.154:5000"
+
 URL_VERSION = SERVER + "/firmware/version"
-URL_MAIN = SERVER + "/firmware/main"
-URL_BOOT = SERVER + "/firmware/boot"
-URL_README = SERVER + "/firmware/README"
-URL_AES = SERVER + "/firmware/cifrar_aes"
-URL_UTS = SERVER + "/firmware/uts_water"
-URL_CONNECT_MQTT = SERVER + "/firmware/connect_mqtt"
+URL_LIST = SERVER + "/firmware/list"
+URL_FILE = SERVER + "/firmware/file/"
 
 
 def wifi():
@@ -26,7 +23,6 @@ def wifi():
 
 def get(url):
     try:
-        print("GET:", url)
         r = urequests.get(url)
         if r.status_code == 200:
             data = r.text
@@ -43,18 +39,17 @@ def update():
     if "version.txt" in os.listdir():
         with open("version.txt") as f:
             local_ver = f.read().strip()
-            print("VL: ", local_ver)
-    print("HERE 3")
+
+    print("Versión local:", local_ver)
+
     # versión remota
     remote_ver = get(URL_VERSION)
-    
     if not remote_ver:
         print("No pude obtener versión remota")
         return
-    else : print("VR: ", remote_ver)
 
     remote_ver = remote_ver.strip()
-    print("Local:", local_ver, "Remota:", remote_ver)
+    print("Versión remota:", remote_ver)
 
     if local_ver == remote_ver:
         print("Sin actualización")
@@ -62,35 +57,32 @@ def update():
 
     print("Nueva actualización disponible!")
 
-    # descargar main.py
-    new_main = get(URL_MAIN)
-    new_boot = get(URL_BOOT)
-    new_readme = get(URL_README)
-    new_aes = get(URL_AES)
-    new_uts = get(URL_UTS)
-    new_connect_mqtt = get(URL_CONNECT_MQTT)
-    files = {
-        "main.py": new_main,
-        "boot.py": new_boot,
-        "README": new_readme,
-        "cifrar_aes.py": new_aes,
-        "uts_water.py": new_uts,
-        "connect_mqtt.py": new_connect_mqtt
-    }
-    for filename, content in files.items():
+    # obtener lista de archivos
+    file_list_raw = get(URL_LIST)
+    if not file_list_raw:
+        print("Error obteniendo lista de archivos")
+        return
+
+    import json
+    files = json.loads(file_list_raw)
+
+    for filename in files:
+        print("Descargando:", filename)
+        content = get(URL_FILE + filename)
+
         if content:
             with open(filename, "w") as f:
                 f.write(content)
-                print(f"{filename} actualizado.") 
+            print("Actualizado:", filename)
         else:
-            print(f"Error descargando {filename}")
-            return
-          
-    # actualizar versión
+            print("Error al descargar:", filename)
+
+    # actualizar versión local
     with open("version.txt", "w") as f:
         f.write(remote_ver)
-    print("Actualizado → Reiniciando")
-    time.sleep(5)
+
+    print("Actualización completa. Reiniciando...")
+    time.sleep(3)
     machine.reset()
 
 

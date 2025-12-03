@@ -6,7 +6,7 @@ import time
 from uts_water import medir_distancia
 from cifrar_aes import *
 
-import connect_wifi
+#import connect_wifi
 
 UMBRAL_DISTANCIA = 25 # 
 # --- Variables protegidas ---
