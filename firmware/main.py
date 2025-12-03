@@ -10,7 +10,8 @@ from cifrar_aes import *
 
 UMBRAL_DISTANCIA = 25 # 
 # --- Variables protegidas ---
-bomba_pin = Pin(4, Pin.OUT)
+bomba_pin = Pin(7, Pin.OUT)
+val_purga = Pin(6, Pin.OUT)
 led = Pin(35, Pin.OUT)
 
 # --- Conexión MQTT ---
