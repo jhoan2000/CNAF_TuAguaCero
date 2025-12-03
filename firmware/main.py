@@ -5,13 +5,12 @@ from umqtt.simple import MQTTClient
 import time
 from uts_water import medir_distancia
 from cifrar_aes import *
-
+from control_filtrado import sistema_filtrado
 #import connect_wifi
 
 UMBRAL_DISTANCIA = 25 # 
 # --- Variables protegidas ---
-bomba_pin = Pin(7, Pin.OUT)
-val_purga = Pin(6, Pin.OUT)
+
 led = Pin(35, Pin.OUT)
 
 # --- Conexión MQTT ---
@@ -22,7 +21,7 @@ mqtt.connect()
 def control_callback(topic, msg):
     try:
         data = ujson.loads(msg)
-        if "bomba_filtro" in data:
+        if "control_manual" in data:
             estado = bool(data["bomba_filtro"])
             bomba_pin.value(1 if estado else 0)
             print("Bomba cambiada manualmente:", estado)
